@@ -51,6 +51,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     // TODO: create autonomous operations class?
+    // TEST: Try push/pull through VSCode only
     // Drive for 2 seconds
     // if (m_timer.get() < 2.0) {
     //   m_robotDrive.arcadeDrive(0.5, 0.0); // drive forwards half speed
