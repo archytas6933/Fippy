@@ -22,15 +22,25 @@
               "Colors/Color when true": "#FF0000FF",
               "Colors/Color when false": "#0000FFFF"
             }
+          },
+          "9,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Command",
+              "_title": "Taunt"
+            }
           }
         }
       }
     }
   ],
   "windowGeometry": {
-    "x": -7.199999809265137,
-    "y": -7.199999809265137,
-    "width": 1550.4000244140625,
-    "height": 838.4000244140625
+    "x": -7.0,
+    "y": -7.0,
+    "width": 1551.0,
+    "height": 839.0
   }
 }
