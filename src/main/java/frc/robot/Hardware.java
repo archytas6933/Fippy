@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.Solenoid;
 
 public class Hardware 
 {
@@ -14,6 +15,9 @@ public class Hardware
     public static int LEFT_BACK_MOTOR = 14;
     public static int RIGHT_FRONT_MOTOR = 11;
     public static int RIGHT_BACK_MOTOR = 13; 
+
+    public static int PNEUMATICS_ID = 0;
+    public static int TESTSOLENOID_ID = 3; 
 
     
     public static int ABUTTON = 1;
@@ -42,6 +46,8 @@ public class Hardware
     public WPI_TalonSRX rightDrive_;
     public WPI_TalonSRX rightFollow_;
 
+    public Solenoid testSolenoid_; 
+
     private UsbCamera camera_;
     
     // hardware initialization
@@ -53,6 +59,8 @@ public class Hardware
         
         rightDrive_ = new WPI_TalonSRX(RIGHT_FRONT_MOTOR);
         rightFollow_ = new WPI_TalonSRX(RIGHT_BACK_MOTOR);
+
+        testSolenoid_ = new Solenoid(PNEUMATICS_ID, TESTSOLENOID_ID);
 
         camera_ = CameraServer.getInstance().startAutomaticCapture(0);
         
@@ -66,6 +74,10 @@ public class Hardware
         rightDrive_.set(ControlMode.PercentOutput, speed + turnrate);        
     }
 
+    public void testsol(Boolean isOpen)
+        {
+            testSolenoid_.set(isOpen);
+        }
 
 
 }
