@@ -1,55 +1,57 @@
 {
   "tabPane": [
     {
-      "title": "SmartDashboard",
-      "autoPopulate": true,
-      "autoPopulatePrefix": "SmartDashboard/",
+      "title": "Fippy dashboard",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
       "widgetPane": {
         "gridSize": 128.0,
         "showGrid": true,
         "hgap": 16.0,
         "vgap": 16.0,
         "tiles": {
-          "9,0": {
+          "5,0": {
             "size": [
               1,
               1
             ],
             "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///FMSInfo/IsRedAlliance",
-              "_title": "Alliance Color",
-              "Colors/Color when true": "#FF0000FF",
-              "Colors/Color when false": "#0000FFFF"
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/sanitycheck",
+              "_title": "sanitycheck"
             }
           },
-          "9,1": {
+          "7,0": {
             "size": [
               1,
               1
             ],
             "content": {
-              "_type": "Command",
-              "_title": "Taunt"
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Green",
+              "_title": "Green"
             }
           },
-          "4,0": {
+          "8,0": {
             "size": [
-              4,
-              4
+              1,
+              1
             ],
             "content": {
-              "_type": "Camera Stream",
-              "_source0": "camera_server://USB Camera 0",
-              "_title": "USB Camera 0",
-              "Crosshair/Show crosshair": false,
-              "Crosshair/Crosshair color": "#FFFFFFFF",
-              "Controls/Show controls": false,
-              "Controls/Rotation": "NONE",
-              "compression": -1.0,
-              "fps": -1,
-              "imageWidth": -1,
-              "imageHeight": -1
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Blue",
+              "_title": "Blue"
+            }
+          },
+          "6,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Red",
+              "_title": "Red"
             }
           }
         }
@@ -57,9 +59,9 @@
     }
   ],
   "windowGeometry": {
-    "x": -7.199999809265137,
+    "x": 1912.800048828125,
     "y": -7.199999809265137,
-    "width": 1551.199951171875,
-    "height": 839.2000122070312
+    "width": 1550.4000244140625,
+    "height": 838.4000244140625
   }
 }

@@ -1,11 +1,14 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Hardware 
 {
@@ -14,6 +17,7 @@ public class Hardware
     public static int LEFT_BACK_MOTOR = 14;
     public static int RIGHT_FRONT_MOTOR = 11;
     public static int RIGHT_BACK_MOTOR = 13; 
+    private final I2C.Port i2cPort = I2C.Port.kOnboard;
 
     
     public static int ABUTTON = 1;
@@ -43,6 +47,9 @@ public class Hardware
     public WPI_TalonSRX rightFollow_;
 
     private UsbCamera camera_;
+
+    private final ColorSensorV3 colorSensor_  = new ColorSensorV3(i2cPort);
+
     
     // hardware initialization
 
@@ -55,6 +62,8 @@ public class Hardware
         rightFollow_ = new WPI_TalonSRX(RIGHT_BACK_MOTOR);
 
         camera_ = CameraServer.getInstance().startAutomaticCapture(0);
+
+        
         
     }
 
@@ -65,7 +74,13 @@ public class Hardware
         leftDrive_.set(ControlMode.PercentOutput, -speed + turnrate);
         rightDrive_.set(ControlMode.PercentOutput, speed + turnrate);        
     }
-
-
+    
+    public void checkColour()
+    {
+        Color detectedColor = colorSensor_.getColor();
+        SmartDashboard.putNumber("Red", detectedColor.red);
+        SmartDashboard.putNumber("Green", detectedColor.green);
+        SmartDashboard.putNumber("Blue", detectedColor.blue);
+    }
 
 }

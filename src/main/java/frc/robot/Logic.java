@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Logic 
 {
@@ -19,6 +20,9 @@ public class Logic
         double speed = drivejoy_.getRawAxis(Hardware.LEFT_STICK_Y);
         double rotate = drivejoy_.getRawAxis(Hardware.RIGHT_STICK_X);
         hardware_.drive(speed * Math.abs(speed), rotate * Math.abs(rotate));
+        SmartDashboard.putNumber("sanitycheck", 69420);
+        hardware_.checkColour();
     }
+    
 
 }
