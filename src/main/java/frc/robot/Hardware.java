@@ -1,20 +1,27 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 
 public class Hardware 
 {
+    public static boolean IS_PNEUMATIC = false;
+
     // ALL MAGIC NUMBERS
     public static int LEFT_FRONT_MOTOR = 12;
     public static int LEFT_BACK_MOTOR = 14;
     public static int RIGHT_FRONT_MOTOR = 11;
     public static int RIGHT_BACK_MOTOR = 13; 
+    private final I2C.Port i2cPort = I2C.Port.kOnboard;
 
     public static int PNEUMATICS_ID = 0;
     public static int TESTSOLENOID_ID = 3; 
@@ -49,6 +56,9 @@ public class Hardware
     public Solenoid testSolenoid_; 
 
     private UsbCamera camera_;
+
+    private final ColorSensorV3 colorSensor_  = new ColorSensorV3(i2cPort);
+
     
     // hardware initialization
 
@@ -60,9 +70,12 @@ public class Hardware
         rightDrive_ = new WPI_TalonSRX(RIGHT_FRONT_MOTOR);
         rightFollow_ = new WPI_TalonSRX(RIGHT_BACK_MOTOR);
 
-        testSolenoid_ = new Solenoid(PNEUMATICS_ID, TESTSOLENOID_ID);
+        if (IS_PNEUMATIC)
+            testSolenoid_ = new Solenoid(PNEUMATICS_ID, TESTSOLENOID_ID);
 
         camera_ = CameraServer.getInstance().startAutomaticCapture(0);
+
+        
         
     }
 
@@ -75,9 +88,19 @@ public class Hardware
     }
 
     public void testsol(Boolean isOpen)
-        {
-            testSolenoid_.set(isOpen);
-        }
+    {
+        if (!IS_PNEUMATIC)
+            return;
+        testSolenoid_.set(isOpen);
+    }
 
+    
+    public void checkColor()
+    {
+        Color detectedColor = colorSensor_.getColor();
+        SmartDashboard.putNumber("Red", detectedColor.red);
+        SmartDashboard.putNumber("Green", detectedColor.green);
+        SmartDashboard.putNumber("Blue", detectedColor.blue);
+    }
 
 }
