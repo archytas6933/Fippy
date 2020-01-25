@@ -13,14 +13,14 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends TimedRobot 
 {
 
-  Hardware hardware_ = new Hardware();
+  public static Hardware hardware_ = new Hardware();
   Logic logic_ = new Logic();
 
   @Override
   public void robotInit() 
   {
     hardware_.init();
-    logic_.init(hardware_);
+    logic_.init();
   }
 
   @Override
@@ -47,7 +47,13 @@ public class Robot extends TimedRobot
   }
 
   @Override
+  public void testInit() { }
+
+  @Override
   public void testPeriodic() { }
+
+  @Override
+  public void disabledInit() { }
 
   @Override
   public void disabledPeriodic() { }

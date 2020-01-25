@@ -10,76 +10,50 @@
         "hgap": 16.0,
         "vgap": 16.0,
         "tiles": {
-          "5,0": {
+          "8,2": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Number Bar",
+              "_source0": "network_table:///SmartDashboard/turns",
+              "_title": "SmartDashboard/turns",
+              "Range/Min": 0.0,
+              "Range/Max": 5.0,
+              "Range/Center": 0.0,
+              "Visuals/Num tick marks": 6,
+              "Visuals/Show text": true
+            }
+          },
+          "3,0": {
+            "size": [
+              5,
+              3
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://USB Camera 0",
+              "_title": "USB Camera 0",
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": -1,
+              "imageHeight": -1
+            }
+          },
+          "9,0": {
             "size": [
               1,
               1
             ],
             "content": {
               "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/sanitycheck",
-              "_title": "sanitycheck"
-            }
-          },
-          "6,1": {
-            "size": [
-              3,
-              1
-            ],
-            "content": {
-              "_type": "Number Bar",
-              "_source0": "network_table:///SmartDashboard/Green",
-              "_title": "Green",
-              "Range/Min": 0.0,
-              "Range/Max": 1.0,
-              "Range/Center": 0.0,
-              "Visuals/Num tick marks": 5,
-              "Visuals/Show text": true
-            }
-          },
-          "6,2": {
-            "size": [
-              3,
-              1
-            ],
-            "content": {
-              "_type": "Number Bar",
-              "_source0": "network_table:///SmartDashboard/Blue",
-              "_title": "Blue",
-              "Range/Min": 0.0,
-              "Range/Max": 1.0,
-              "Range/Center": 0.0,
-              "Visuals/Num tick marks": 5,
-              "Visuals/Show text": true
-            }
-          },
-          "6,0": {
-            "size": [
-              3,
-              1
-            ],
-            "content": {
-              "_type": "Number Bar",
-              "_source0": "network_table:///SmartDashboard/Red",
-              "_title": "Red",
-              "Range/Min": 0.0,
-              "Range/Max": 1.0,
-              "Range/Center": 0.0,
-              "Visuals/Num tick marks": 5,
-              "Visuals/Show text": true
-            }
-          },
-          "4,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/B Button",
-              "_title": "SmartDashboard/B Button",
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
+              "_source0": "network_table:///SmartDashboard/color:",
+              "_title": "SmartDashboard/color:"
             }
           }
         }
@@ -87,9 +61,9 @@
     }
   ],
   "windowGeometry": {
-    "x": -1608.0,
-    "y": 1000.0,
-    "width": 1616.0,
-    "height": 876.0
+    "x": -7.0,
+    "y": 0.0,
+    "width": 1614.0,
+    "height": 867.0
   }
 }
