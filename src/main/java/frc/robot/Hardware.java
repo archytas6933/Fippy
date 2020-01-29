@@ -80,6 +80,7 @@ public class Hardware
     public Solenoid testSolenoid_; 
 
     private UsbCamera camera_;
+    private UsbCamera camera2_;
 
     private final ColorSensorV3 colorSensor_  = new ColorSensorV3(i2cPort);
 
@@ -120,7 +121,9 @@ public class Hardware
             testSolenoid_ = new Solenoid(PNEUMATICS_ID, TESTSOLENOID_ID);
 
         camera_ = CameraServer.getInstance().startAutomaticCapture(0);
-
+        camera2_= CameraServer.getInstance().startAutomaticCapture(1);
+        camera2_.setResolution(120, 120);
+        camera_.setResolution(120, 120);
         
         
     }

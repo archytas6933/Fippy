@@ -53,7 +53,18 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/color:",
-              "_title": "SmartDashboard/color:"
+              "_title": "/SmartDashboard/color:"
+            }
+          },
+          "8,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/goalcolor",
+              "_title": "/SmartDashboard/goalcolor"
             }
           }
         }

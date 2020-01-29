@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -11,6 +12,8 @@ public class Logic
     public int previousColor_;
     private String colorHistory_;
     private boolean isAutoDriving_;
+    private String gameTargetColor_;
+    private boolean isColorFound_;
 
     private Joystick drivejoy_ = new Joystick(0);
 //    private Joystick operatorjoy_ = new Joystick(1);
@@ -22,7 +25,8 @@ public class Logic
         colorRotations_ = 0;
         previousColor_ = -1;
         colorHistory_ = "";
-        
+        isColorFound_ = false;
+
         hardware_ = Robot.hardware_;
 
         isAutoDriving_ = false;
@@ -43,17 +47,27 @@ public class Logic
     // runs every 20 ms during TELEOP
     public void run()
     {
+        gameTargetColor_= DriverStation.getInstance().getGameSpecificMessage();
+        checkgamecolor();
         SmartDashboard.putNumber("turns", colorRotations_);
         SmartDashboard.putString("colorHistory", colorHistory_);
-        SmartDashboard.putString("color:",currentcolor());
+        SmartDashboard.putString("color:", currentcolor());
+        SmartDashboard.putString("goalcolor", gameTargetColor_);
 
         // SmartDashboard.putNumber("leftpos", hardware_.leftpos());
         // SmartDashboard.putNumber("rightpos", hardware_.rightpos());
    
         if (drivejoy_.getRawButton(Hardware.ABUTTON))
             {
-                hardware_.spinwheel(1);
                 int color = hardware_.findColor();
+                if (color != checkgamecolor() && !isColorFound_)
+                    hardware_.spinwheel(1);
+                else 
+                    {
+                    if (!isColorFound_)
+                        hardware_.spinwheel(0);
+                    isColorFound_ = true;
+                    }    
                 if (previousColor_ == -1)
                 {
                     previousColor_ = color; 
@@ -63,10 +77,8 @@ public class Logic
                 int distance = ((color + 4 - previousColor_) % 4);
                 if (distance != 3)
                     {
-                        colorRotations_ += distance * 0.125;
-                        if (distance != 0)
-                            colorHistory_ += Integer.toString(distance);
-                        previousColor_ = color;
+                    colorRotations_ += distance * 0.125;
+                    previousColor_ = color;
                     }
             }
         else
@@ -75,10 +87,10 @@ public class Logic
                     hardware_.spinwheel(0);
                 previousColor_ = -1;
                 isAutoDriving_ = false;
+                isColorFound_ = false;
             }
-        hardware_.checkColor();
-        
-
+        // hardware_.checkColor();
+            
         if (!isAutoDriving_)
         {
             double speed = - drivejoy_.getRawAxis(Hardware.LEFT_STICK_Y);
@@ -87,6 +99,20 @@ public class Logic
         }
     }
 
+    public int checkgamecolor()
+    {
+        if(gameTargetColor_.length() > 0)
+        {
+            switch (gameTargetColor_.charAt(0))
+            {
+                case 'B': return 0;
+                case 'G': return 3;
+                case 'R': return 2;
+                case 'Y': return 1;
+            }
+        }
+        return -1;
+    }
     public void startauto()
     {
         auto_ = new SequentialCommandGroup();
