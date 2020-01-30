@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public class Logic 
@@ -14,6 +15,7 @@ public class Logic
     private boolean isAutoDriving_;
     private String gameTargetColor_;
     private boolean isColorFound_;
+    private boolean isBraking_;
 
     private Joystick drivejoy_ = new Joystick(0);
 //    private Joystick operatorjoy_ = new Joystick(1);
@@ -26,6 +28,7 @@ public class Logic
         previousColor_ = -1;
         colorHistory_ = "";
         isColorFound_ = false;
+        isBraking_ = false;
 
         hardware_ = Robot.hardware_;
 
@@ -44,6 +47,45 @@ public class Logic
         return "";
     }
 
+    public int checkgamecolor()
+    {
+        if(gameTargetColor_.length() > 0)
+        {
+            switch (gameTargetColor_.charAt(0))
+            {
+                case 'B': return 0;
+                case 'G': return 3;
+                case 'R': return 2;
+                case 'Y': return 1;
+            }
+        }
+        return -1;
+    }
+    public void startauto()
+    {
+        auto_ = new SequentialCommandGroup();
+        auto_.addCommands(new CommandDrive(4));
+        auto_.addCommands(new CommandTurn(90));        
+        auto_.addCommands(new CommandDrive(4));
+        auto_.addCommands(new CommandTurn(90));
+        auto_.addCommands(new CommandDrive(4));
+        auto_.addCommands(new CommandTurn(90));
+        auto_.addCommands(new CommandDrive(4));
+        auto_.addCommands(new CommandTurn(90));
+      // auto_.addCommands(new CommandDeliver());
+        // auto_.addCommands(new CommandDrive(-1.5));
+      // auto_.addCommands(new CommandTurn(180));
+        // auto_.addCommands(hardware_.getAutoDriveCommand());
+        auto_.schedule();
+    }
+
+    public void startteleop()
+    {
+        System.out.println("CANCELLING ALL COMMANDS");
+        CommandScheduler.getInstance().cancelAll();
+        hardware_.brake();
+    }
+    
     // runs every 20 ms during TELEOP
     public void run()
     {
@@ -71,7 +113,7 @@ public class Logic
                 if (previousColor_ == -1)
                 {
                     previousColor_ = color; 
-                    hardware_.driveLock(500);
+                    hardware_.driveLock(0.2);
                     isAutoDriving_ = true;
                 }
                 int distance = ((color + 4 - previousColor_) % 4);
@@ -95,37 +137,17 @@ public class Logic
         {
             double speed = - drivejoy_.getRawAxis(Hardware.LEFT_STICK_Y);
             double rotate = drivejoy_.getRawAxis(Hardware.RIGHT_STICK_X);
-            hardware_.drive(speed * Math.abs(speed), rotate * Math.abs(rotate));
-        }
-    }
-
-    public int checkgamecolor()
-    {
-        if(gameTargetColor_.length() > 0)
-        {
-            switch (gameTargetColor_.charAt(0))
-            {
-                case 'B': return 0;
-                case 'G': return 3;
-                case 'R': return 2;
-                case 'Y': return 1;
+            if (drivejoy_.getRawButton(Hardware.RBBUTTON)){
+                if (!isBraking_)
+                    hardware_.brake();
+                isBraking_ = true;
             }
+            else{
+                hardware_.drive(speed * Math.abs(speed), rotate * Math.abs(rotate));
+                isBraking_ = false;
+            }
+            
         }
-        return -1;
     }
-    public void startauto()
-    {
-        auto_ = new SequentialCommandGroup();
-        auto_.addCommands(new CommandDrive(0.3));
-        auto_.addCommands(new CommandDeliver());
-        auto_.addCommands(new CommandDrive(-0.3));
-        auto_.schedule();
-    }
-
-    // runs every 20 ms during AUTO
-    public void runauto()
-    {
-    }
-    
 
 }

@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.util.List;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -9,9 +11,22 @@ import com.revrobotics.ColorSensorV3;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.RamseteController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 
 
 public class Hardware 
@@ -19,10 +34,23 @@ public class Hardware
     public static boolean IS_PNEUMATIC = false;
 
     // ALL MAGIC NUMBERS
-    public static int LEFT_CONTROL_MOTOR = 14;
-    public static int LEFT_FOLLOW_MOTOR = 12;
-    public static int RIGHT_CONTROL_MOTOR = 11;
-    public static int RIGHT_FOLLOW_MOTOR = 13; 
+
+    public static final double ksVolts = 0.918;
+    public static final double kvVoltSecondsPerMeter = 3.0;
+    public static final double kaVoltSecondsSquaredPerMeter = 0.542;
+
+    public static final double kPDriveVel = 39.4;
+    public static final double kTrackwidthMeters = 0.588;
+    public static final DifferentialDriveKinematics kDriveKinematics =
+        new DifferentialDriveKinematics(kTrackwidthMeters);
+        
+    public static final double kMaxSpeedMetersPerSecond = 5;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 10;            
+
+    // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
+    public static final double kRamseteB = 2;
+    public static final double kRamseteZeta = 0.7;    
+
     public static int COLOR_WHEEL_MOTOR = 20;
     private static double COLOR_WHEEL_VELOCITY_P = 0.1;
     private static double COLOR_WHEEL_VELOCITY_I = 0.001;
@@ -33,17 +61,7 @@ public class Hardware
     private static double COLOR_WHEEL_POSITION_D = 0.2;
     private static int COLOR_WHEEL_VELOCITY_SLOT = 0;
     private static int COLOR_WHEEL_POSITION_SLOT = 1;
-    
-    private static double LEFT_MOTOR_POSITION_P = 0.3;
-    private static double LEFT_MOTOR_POSITION_I = 0; //0.0015;
-    private static double LEFT_MOTOR_POSITION_D = 0.2;
-    private static int LEFT_MOTOR_POSITION_SLOT = 1;
-    
-    private static double RIGHT_MOTOR_POSITION_P = 0.3;
-    private static double RIGHT_MOTOR_POSITION_I = 0; //0.0015;
-    private static double RIGHT_MOTOR_POSITION_D = 0.2;
-    private static int RIGHT_MOTOR_POSITION_SLOT = 1;
-   
+        
     private final I2C.Port i2cPort = I2C.Port.kOnboard;
 
     public static int PNEUMATICS_ID = 0;
@@ -71,10 +89,6 @@ public class Hardware
 
     // hardware object declarations
 
-    public WPI_TalonSRX leftDrive_;
-    public WPI_VictorSPX leftFollow_;
-    public WPI_TalonSRX rightDrive_;
-    public WPI_VictorSPX rightFollow_;
     public WPI_TalonSRX colorWheel_;
 
     public Solenoid testSolenoid_; 
@@ -84,29 +98,12 @@ public class Hardware
 
     private final ColorSensorV3 colorSensor_  = new ColorSensorV3(i2cPort);
 
-    
+    public DriveSubsystem robotdrive_ = new DriveSubsystem();
+
     // hardware initialization
 
     public void init()
     {
-        leftDrive_ = new WPI_TalonSRX(LEFT_CONTROL_MOTOR);
-        leftDrive_.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-        leftDrive_.setSensorPhase(true);
-        leftDrive_.config_kP(RIGHT_MOTOR_POSITION_SLOT, RIGHT_MOTOR_POSITION_P);
-        leftDrive_.config_kI(RIGHT_MOTOR_POSITION_SLOT, RIGHT_MOTOR_POSITION_I);
-        leftDrive_.config_kD(RIGHT_MOTOR_POSITION_SLOT, RIGHT_MOTOR_POSITION_D);
-        leftFollow_ = new WPI_VictorSPX(LEFT_FOLLOW_MOTOR);
-        leftFollow_.follow(leftDrive_);
-
-        rightDrive_ = new WPI_TalonSRX(RIGHT_CONTROL_MOTOR);
-        rightDrive_.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-        rightDrive_.setSensorPhase(true);
-        rightDrive_.config_kP(LEFT_MOTOR_POSITION_SLOT, LEFT_MOTOR_POSITION_P);
-        rightDrive_.config_kI(LEFT_MOTOR_POSITION_SLOT, LEFT_MOTOR_POSITION_I);
-        rightDrive_.config_kD(LEFT_MOTOR_POSITION_SLOT, LEFT_MOTOR_POSITION_D);
-        rightFollow_ = new WPI_VictorSPX(RIGHT_FOLLOW_MOTOR);
-        rightFollow_.follow(rightDrive_);
-
         colorWheel_ = new WPI_TalonSRX(COLOR_WHEEL_MOTOR); 
         colorWheel_.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
         colorWheel_.config_kP(COLOR_WHEEL_VELOCITY_SLOT, COLOR_WHEEL_VELOCITY_P);
@@ -130,20 +127,19 @@ public class Hardware
 
     // hardware helper functions
 
+    public void brake()
+    {
+        robotdrive_.brake();
+    }
+
     public void drive(double speed, double turnrate)
     {
-        leftDrive_.set(ControlMode.PercentOutput, speed + turnrate);
-        rightDrive_.set(ControlMode.PercentOutput, -speed + turnrate);        
+        robotdrive_.arcadeDrive(speed, turnrate);
     }
 
     public void driveLock(double distance)
     {
-        leftDrive_.setSelectedSensorPosition(0);
-        leftDrive_.set(ControlMode.Position, distance);
-        rightDrive_.setSelectedSensorPosition(0);
-        rightDrive_.set(ControlMode.Position, -distance);
-
-
+        robotdrive_.drivelock(distance);
     }
 
     public void spinwheel(double speed)
@@ -161,16 +157,6 @@ public class Hardware
             // intakeposition_ = colorWheel_.getSelectedSensorPosition();
         }
     } 
-
-    public int leftpos()
-    {
-        return leftDrive_.getSelectedSensorPosition();
-    }
-
-    public int rightpos()
-    {
-        return rightDrive_.getSelectedSensorPosition();
-    }
 
     public void testsol(Boolean isOpen)
     {
@@ -207,4 +193,60 @@ public class Hardware
         SmartDashboard.putNumber("Blue", detectedColor.blue);
     }
 
+
+//   public Command getAutoDriveCommand() 
+//   {
+
+//     // Create a voltage constraint to ensure we don't accelerate too fast
+//     var autoVoltageConstraint =
+//         new DifferentialDriveVoltageConstraint(
+//             new SimpleMotorFeedforward(ksVolts,
+//                     kvVoltSecondsPerMeter,
+//                     kaVoltSecondsSquaredPerMeter),
+//                     kDriveKinematics,
+//             10);
+
+//     // Create config for trajectory
+//     TrajectoryConfig config =
+//         new TrajectoryConfig(kMaxSpeedMetersPerSecond,
+//                              kMaxAccelerationMetersPerSecondSquared)
+//             // Add kinematics to ensure max speed is actually obeyed
+//             .setKinematics(kDriveKinematics)
+//             // Apply the voltage constraint
+//             .addConstraint(autoVoltageConstraint);
+
+//     // An example trajectory to follow.  All units in meters.
+//     Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+//         // Start at the origin facing the +X direction
+//         new Pose2d(0, 0, new Rotation2d(0)),
+//         // Pass through these two interior waypoints, making an 's' curve path
+//         List.of(
+//             new Translation2d(1, 1),
+//             new Translation2d(2, -1)
+//         ),
+//         // End 3 meters straight ahead of where we started, facing forward
+//         new Pose2d(3, 0, new Rotation2d(0)),
+//         // Pass config
+//         config
+//     );
+
+//     RamseteCommand ramseteCommand = new RamseteCommand(
+//         exampleTrajectory,
+//         robotdrive_::getPose,
+//         new RamseteController(kRamseteB, kRamseteZeta),
+//         new SimpleMotorFeedforward(ksVolts,
+//                                    kvVoltSecondsPerMeter,
+//                                    kaVoltSecondsSquaredPerMeter),
+//         kDriveKinematics,
+//         robotdrive_::getWheelSpeeds,
+//         new PIDController(kPDriveVel, 0, 0),
+//         new PIDController(kPDriveVel, 0, 0),
+//         // RamseteCommand passes volts to the callback
+//         robotdrive_::tankDriveVolts,
+//         robotdrive_
+//     );
+
+//     // Run path following command, then stop at the end.
+//     return ramseteCommand;
+//   }
 }

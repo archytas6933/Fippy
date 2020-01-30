@@ -10,7 +10,7 @@
         "hgap": 16.0,
         "vgap": 16.0,
         "tiles": {
-          "8,2": {
+          "6,2": {
             "size": [
               3,
               1
@@ -28,16 +28,16 @@
           },
           "3,0": {
             "size": [
-              5,
+              3,
               3
             ],
             "content": {
               "_type": "Camera Stream",
               "_source0": "camera_server://USB Camera 0",
               "_title": "USB Camera 0",
-              "Crosshair/Show crosshair": true,
+              "Crosshair/Show crosshair": false,
               "Crosshair/Crosshair color": "#FFFFFFFF",
-              "Controls/Show controls": true,
+              "Controls/Show controls": false,
               "Controls/Rotation": "NONE",
               "compression": -1.0,
               "fps": -1,
@@ -45,7 +45,7 @@
               "imageHeight": -1
             }
           },
-          "9,0": {
+          "7,0": {
             "size": [
               1,
               1
@@ -53,10 +53,10 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/color:",
-              "_title": "/SmartDashboard/color:"
+              "_title": "currentcolor"
             }
           },
-          "8,0": {
+          "6,0": {
             "size": [
               1,
               1
@@ -64,7 +64,26 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/goalcolor",
-              "_title": "/SmartDashboard/goalcolor"
+              "_title": "goalcolor"
+            }
+          },
+          "0,0": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://USB Camera 1",
+              "_title": "USB Camera 1",
+              "Crosshair/Show crosshair": false,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": false,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": -1,
+              "imageHeight": -1
             }
           }
         }

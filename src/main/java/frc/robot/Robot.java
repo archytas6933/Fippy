@@ -32,12 +32,12 @@ public class Robot extends TimedRobot
   @Override
   public void autonomousPeriodic() 
   {
-    logic_.runauto();
   }
 
   @Override
   public void teleopInit() 
   {
+    logic_.startteleop();
   }
 
   @Override
