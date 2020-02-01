@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class CommandDrive extends CommandBase {
@@ -46,8 +45,12 @@ public class CommandDrive extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    double current = drive_.getAverageEncoderDistance();
+    //double current = drive_.getAverageEncoderDistance();
+    double left = drive_.getLeftDistance();
+    double right = drive_.getRightDistance();
     // System.out.printf("current: %f, goal: %f\n", current, meters_);
-    return Math.abs(current) > Math.abs(meters_);
+    // return Math.abs(current) > Math.abs(meters_);
+    return Math.abs(left) > Math.abs(meters_) && 
+      Math.abs(right) > Math.abs(meters_);
   }
 }

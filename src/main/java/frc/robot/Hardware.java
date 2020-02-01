@@ -49,7 +49,9 @@ public class Hardware
 
     // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
     public static final double kRamseteB = 2;
-    public static final double kRamseteZeta = 0.7;    
+    public static final double kRamseteZeta = 0.7;  
+    
+    public static int WINCH_MOTOR =20;
 
     public static int COLOR_WHEEL_MOTOR = 20;
     private static double COLOR_WHEEL_VELOCITY_P = 0.1;
@@ -90,6 +92,7 @@ public class Hardware
     // hardware object declarations
 
     public WPI_TalonSRX colorWheel_;
+    public WPI_TalonSRX climbWinch_;
 
     public Solenoid testSolenoid_; 
 
@@ -104,15 +107,18 @@ public class Hardware
 
     public void init()
     {
-        colorWheel_ = new WPI_TalonSRX(COLOR_WHEEL_MOTOR); 
-        colorWheel_.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-        colorWheel_.config_kP(COLOR_WHEEL_VELOCITY_SLOT, COLOR_WHEEL_VELOCITY_P);
-        colorWheel_.config_kI(COLOR_WHEEL_VELOCITY_SLOT, COLOR_WHEEL_VELOCITY_I);
-        colorWheel_.config_kD(COLOR_WHEEL_VELOCITY_SLOT, COLOR_WHEEL_VELOCITY_D);
-        colorWheel_.config_kF(COLOR_WHEEL_VELOCITY_SLOT, COLOR_WHEEL_VELOCITY_F);
-        colorWheel_.config_kP(COLOR_WHEEL_POSITION_SLOT, COLOR_WHEEL_POSITION_P);
-        colorWheel_.config_kI(COLOR_WHEEL_POSITION_SLOT, COLOR_WHEEL_POSITION_I);
-        colorWheel_.config_kD(COLOR_WHEEL_POSITION_SLOT, COLOR_WHEEL_POSITION_D);
+        // colorWheel_ = new WPI_TalonSRX(COLOR_WHEEL_MOTOR); 
+        // colorWheel_.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+        // colorWheel_.config_kP(COLOR_WHEEL_VELOCITY_SLOT, COLOR_WHEEL_VELOCITY_P);
+        // colorWheel_.config_kI(COLOR_WHEEL_VELOCITY_SLOT, COLOR_WHEEL_VELOCITY_I);
+        // colorWheel_.config_kD(COLOR_WHEEL_VELOCITY_SLOT, COLOR_WHEEL_VELOCITY_D);
+        // colorWheel_.config_kF(COLOR_WHEEL_VELOCITY_SLOT, COLOR_WHEEL_VELOCITY_F);
+        // colorWheel_.config_kP(COLOR_WHEEL_POSITION_SLOT, COLOR_WHEEL_POSITION_P);
+        // colorWheel_.config_kI(COLOR_WHEEL_POSITION_SLOT, COLOR_WHEEL_POSITION_I);
+        // colorWheel_.config_kD(COLOR_WHEEL_POSITION_SLOT, COLOR_WHEEL_POSITION_D);
+
+        climbWinch_ = new WPI_TalonSRX(WINCH_MOTOR);
+        climbWinch_.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
 
         if (IS_PNEUMATIC)
             testSolenoid_ = new Solenoid(PNEUMATICS_ID, TESTSOLENOID_ID);
@@ -158,7 +164,19 @@ public class Hardware
         }
     } 
 
-    public void testsol(Boolean isOpen)
+    public void climbwithwinch(double speed)
+        {
+            if (speed == 0)
+            {
+                climbWinch_.selectProfileSlot(1, 0);
+                climbWinch_.setSelectedSensorPosition(0);
+                climbWinch_.set(ControlMode.Position, 0);
+            }
+            else 
+                climbWinch_.set(ControlMode.PercentOutput, speed);
+        }
+   
+        public void testsol(Boolean isOpen)
     {
         if (!IS_PNEUMATIC)
             return;
@@ -194,59 +212,59 @@ public class Hardware
     }
 
 
-//   public Command getAutoDriveCommand() 
-//   {
+  public Command getAutoDriveCommand() 
+  {
 
-//     // Create a voltage constraint to ensure we don't accelerate too fast
-//     var autoVoltageConstraint =
-//         new DifferentialDriveVoltageConstraint(
-//             new SimpleMotorFeedforward(ksVolts,
-//                     kvVoltSecondsPerMeter,
-//                     kaVoltSecondsSquaredPerMeter),
-//                     kDriveKinematics,
-//             10);
+    // Create a voltage constraint to ensure we don't accelerate too fast
+    var autoVoltageConstraint =
+        new DifferentialDriveVoltageConstraint(
+            new SimpleMotorFeedforward(ksVolts,
+                    kvVoltSecondsPerMeter,
+                    kaVoltSecondsSquaredPerMeter),
+                    kDriveKinematics,
+            10);
 
-//     // Create config for trajectory
-//     TrajectoryConfig config =
-//         new TrajectoryConfig(kMaxSpeedMetersPerSecond,
-//                              kMaxAccelerationMetersPerSecondSquared)
-//             // Add kinematics to ensure max speed is actually obeyed
-//             .setKinematics(kDriveKinematics)
-//             // Apply the voltage constraint
-//             .addConstraint(autoVoltageConstraint);
+    // Create config for trajectory
+    TrajectoryConfig config =
+        new TrajectoryConfig(kMaxSpeedMetersPerSecond,
+                             kMaxAccelerationMetersPerSecondSquared)
+            // Add kinematics to ensure max speed is actually obeyed
+            .setKinematics(kDriveKinematics)
+            // Apply the voltage constraint
+            .addConstraint(autoVoltageConstraint);
 
-//     // An example trajectory to follow.  All units in meters.
-//     Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-//         // Start at the origin facing the +X direction
-//         new Pose2d(0, 0, new Rotation2d(0)),
-//         // Pass through these two interior waypoints, making an 's' curve path
-//         List.of(
-//             new Translation2d(1, 1),
-//             new Translation2d(2, -1)
-//         ),
-//         // End 3 meters straight ahead of where we started, facing forward
-//         new Pose2d(3, 0, new Rotation2d(0)),
-//         // Pass config
-//         config
-//     );
+    // An example trajectory to follow.  All units in meters.
+    Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+        // Start at the origin facing the +X direction
+        new Pose2d(0, 0, new Rotation2d(0)),
+        // Pass through these two interior waypoints, making an 's' curve path
+        List.of(
+            new Translation2d(1, 1),
+            new Translation2d(2, -1)
+        ),
+        // End 3 meters straight ahead of where we started, facing forward
+        new Pose2d(3, 0, new Rotation2d(0)),
+        // Pass config
+        config
+    );
 
-//     RamseteCommand ramseteCommand = new RamseteCommand(
-//         exampleTrajectory,
-//         robotdrive_::getPose,
-//         new RamseteController(kRamseteB, kRamseteZeta),
-//         new SimpleMotorFeedforward(ksVolts,
-//                                    kvVoltSecondsPerMeter,
-//                                    kaVoltSecondsSquaredPerMeter),
-//         kDriveKinematics,
-//         robotdrive_::getWheelSpeeds,
-//         new PIDController(kPDriveVel, 0, 0),
-//         new PIDController(kPDriveVel, 0, 0),
-//         // RamseteCommand passes volts to the callback
-//         robotdrive_::tankDriveVolts,
-//         robotdrive_
-//     );
+    RamseteCommand ramseteCommand = new RamseteCommand(
+        exampleTrajectory,
+        robotdrive_::getPose,
+        new RamseteController(kRamseteB, kRamseteZeta),
+        new SimpleMotorFeedforward(ksVolts,
+                                   kvVoltSecondsPerMeter,
+                                   kaVoltSecondsSquaredPerMeter),
+        kDriveKinematics,
+        robotdrive_::getWheelSpeeds,
+        new PIDController(kPDriveVel, 0, 0),
+        new PIDController(kPDriveVel, 0, 0),
+        // RamseteCommand passes volts to the callback
+        robotdrive_::tankDriveVolts,
+        robotdrive_
+    );
 
-//     // Run path following command, then stop at the end.
-//     return ramseteCommand;
-//   }
+    // Run path following command, then stop at the end.
+    return ramseteCommand;
+  }
 }

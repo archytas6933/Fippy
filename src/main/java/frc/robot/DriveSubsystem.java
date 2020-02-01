@@ -15,7 +15,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
@@ -24,8 +23,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase 
 {
-  public static double METERS_PER_ENCODER = 0.0007143;
-  public static double DEGREES_PER_ENCODER = 0.055;
+  public static double TICKS_PER_METER = 1400.0;
+  public static double TICKS_PER_DEGREE = 18.0;
   public static int LEFT_CONTROL_MOTOR = 14;
   public static int LEFT_FOLLOW_MOTOR = 12;
   public static int RIGHT_CONTROL_MOTOR = 11;
@@ -104,22 +103,22 @@ public class DriveSubsystem extends SubsystemBase
 
   public double getLeftDistance()
   {
-    return leftDrive_.getSelectedSensorPosition() * METERS_PER_ENCODER;
+    return leftDrive_.getSelectedSensorPosition() / TICKS_PER_METER;
   }
 
   public double getLeftRate()
   {
-    return leftDrive_.getSelectedSensorVelocity() * METERS_PER_ENCODER;
+    return leftDrive_.getSelectedSensorVelocity() / TICKS_PER_METER;
   }
 
   public double getRightDistance()
   {
-    return -rightDrive_.getSelectedSensorPosition() * METERS_PER_ENCODER;
+    return -rightDrive_.getSelectedSensorPosition() / TICKS_PER_METER;
   }
 
   public double getRightRate()
   {
-    return rightDrive_.getSelectedSensorVelocity() * METERS_PER_ENCODER;
+    return rightDrive_.getSelectedSensorVelocity() / TICKS_PER_METER;
   }
 
   public Pose2d getPose() {
@@ -154,18 +153,18 @@ public class DriveSubsystem extends SubsystemBase
   {
     resetencoders();
     leftDrive_.selectProfileSlot(1, 0);
-    leftDrive_.set(ControlMode.Position, degrees / DEGREES_PER_ENCODER);
+    leftDrive_.set(ControlMode.Position, degrees * TICKS_PER_DEGREE);
     rightDrive_.selectProfileSlot(1, 0);
-    rightDrive_.set(ControlMode.Position, degrees / DEGREES_PER_ENCODER);
+    rightDrive_.set(ControlMode.Position, degrees * TICKS_PER_DEGREE);
   }
 
   public void drivelock(double distance)
   {
     resetencoders();
     leftDrive_.selectProfileSlot(1, 0);
-    leftDrive_.set(ControlMode.Position, distance / METERS_PER_ENCODER);
+    leftDrive_.set(ControlMode.Position, distance * TICKS_PER_METER);
     rightDrive_.selectProfileSlot(1, 0);
-    rightDrive_.set(ControlMode.Position, -distance / METERS_PER_ENCODER);
+    rightDrive_.set(ControlMode.Position, -distance * TICKS_PER_METER);
   }
 
   public void tankDriveVolts(double leftVolts, double rightVolts) {

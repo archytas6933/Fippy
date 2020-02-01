@@ -72,10 +72,10 @@ public class Logic
         auto_.addCommands(new CommandTurn(90));
         auto_.addCommands(new CommandDrive(4));
         auto_.addCommands(new CommandTurn(90));
-      // auto_.addCommands(new CommandDeliver());
-        // auto_.addCommands(new CommandDrive(-1.5));
-      // auto_.addCommands(new CommandTurn(180));
-        // auto_.addCommands(hardware_.getAutoDriveCommand());
+//        auto_.addCommands(new CommandDeliver());
+//        auto_.addCommands(hardware_.getAutoDriveCommand());
+//        auto_.addCommands(new CommandDrive(1));
+//        auto_.addCommands(new CommandTurn(180));
         auto_.schedule();
     }
 
@@ -92,13 +92,21 @@ public class Logic
         gameTargetColor_= DriverStation.getInstance().getGameSpecificMessage();
         checkgamecolor();
         SmartDashboard.putNumber("turns", colorRotations_);
-        SmartDashboard.putString("colorHistory", colorHistory_);
         SmartDashboard.putString("color:", currentcolor());
         SmartDashboard.putString("goalcolor", gameTargetColor_);
+        double mps = ((-hardware_.robotdrive_.getRightRate()+
+            hardware_.robotdrive_.getLeftRate())/2)*10;
+        SmartDashboard.putNumber("MPS", mps);
 
         // SmartDashboard.putNumber("leftpos", hardware_.leftpos());
         // SmartDashboard.putNumber("rightpos", hardware_.rightpos());
-   
+        if (drivejoy_.getRawButton(Hardware.BBUTTON))
+        {
+            hardware_.climbwithwinch(1);
+        }
+        else
+            hardware_.climbwithwinch(0);
+
         if (drivejoy_.getRawButton(Hardware.ABUTTON))
             {
                 int color = hardware_.findColor();
