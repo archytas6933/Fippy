@@ -34,7 +34,7 @@
             "content": {
               "_type": "Camera Stream",
               "_source0": "camera_server://USB Camera 0",
-              "_title": "USB Camera 0",
+              "_title": "DELIVER",
               "Crosshair/Show crosshair": false,
               "Crosshair/Crosshair color": "#FFFFFFFF",
               "Controls/Show controls": false,
@@ -75,7 +75,7 @@
             "content": {
               "_type": "Camera Stream",
               "_source0": "camera_server://USB Camera 1",
-              "_title": "USB Camera 1",
+              "_title": "INTAKE",
               "Crosshair/Show crosshair": false,
               "Crosshair/Crosshair color": "#FFFFFFFF",
               "Controls/Show controls": false,
@@ -94,7 +94,7 @@
             "content": {
               "_type": "Boolean Box",
               "_source0": "network_table:///FMSInfo/IsRedAlliance",
-              "_title": "/FMSInfo/IsRedAlliance",
+              "_title": "Alliance",
               "Colors/Color when true": "#FF0000FF",
               "Colors/Color when false": "#0000FFFF"
             }

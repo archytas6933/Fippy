@@ -16,9 +16,10 @@ public class Logic
     private String gameTargetColor_;
     private boolean isColorFound_;
     private boolean isBraking_;
+    private boolean isprecisionmode_;
 
     private Joystick drivejoy_ = new Joystick(0);
-//    private Joystick operatorjoy_ = new Joystick(1);
+    private Joystick operatorjoy_ = new Joystick(1);
 
     SequentialCommandGroup auto_;
 
@@ -29,6 +30,7 @@ public class Logic
         colorHistory_ = "";
         isColorFound_ = false;
         isBraking_ = false;
+        isprecisionmode_ = false;
 
         hardware_ = Robot.hardware_;
 
@@ -107,6 +109,21 @@ public class Logic
         else
             hardware_.climbwithwinch(0);
 
+
+        if (operatorjoy_.getRawButton(Hardware.YBUTTON))
+            hardware_.liftsabe(1);
+        if (operatorjoy_.getRawButton(Hardware.ABUTTON))
+            hardware_.liftsabe(-1);
+
+
+        hardware_.climbwithwinch(operatorjoy_.getRawAxis(Hardware.RIGHT_STICK_Y));
+        
+        if(drivejoy_.getPOV() == Hardware.DAXISN)
+           isprecisionmode_ = true;
+        if (drivejoy_.getPOV() == Hardware.DAXISS)
+            isprecisionmode_ = false;
+        SmartDashboard.putBoolean("isprecision", isprecisionmode_);
+        
         if (drivejoy_.getRawButton(Hardware.ABUTTON))
             {
                 int color = hardware_.findColor();
@@ -144,14 +161,27 @@ public class Logic
         if (!isAutoDriving_)
         {
             double speed = - drivejoy_.getRawAxis(Hardware.LEFT_STICK_Y);
+            double intakespeed =  drivejoy_.getRawAxis(Hardware.RTAXIS);
+            double deliveryspeed = drivejoy_.getRawAxis(Hardware.LTAXIS);
             double rotate = drivejoy_.getRawAxis(Hardware.RIGHT_STICK_X);
-            if (drivejoy_.getRawButton(Hardware.RBBUTTON)){
+            speed += intakespeed;
+            speed -= deliveryspeed;
+            if (isprecisionmode_)
+                {
+                    speed = speed / 2;
+                    rotate = rotate / 2;
+                }
+            if (drivejoy_.getRawButton(Hardware.RBBUTTON))
+            {
                 if (!isBraking_)
                     hardware_.brake();
                 isBraking_ = true;
             }
-            else{
+            else
+            {
+
                 hardware_.drive(speed * Math.abs(speed), rotate * Math.abs(rotate));
+                
                 isBraking_ = false;
             }
             

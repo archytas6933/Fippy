@@ -11,6 +11,7 @@ import com.revrobotics.ColorSensorV3;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
@@ -49,7 +50,7 @@ public class Hardware
 
     // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
     public static final double kRamseteB = 2;
-    public static final double kRamseteZeta = 0.7;  
+    public static final double kRamseteZeta = 0.7;
     
     public static int WINCH_MOTOR =20;
 
@@ -81,6 +82,13 @@ public class Hardware
 	public static int LEFTJOYCLICK = 9;
     public static int RIGHTJOYCLICK = 10;
     
+	public static final int DAXISN = 0;
+    public static final int DAXISS = 180;
+
+	public static final int RTAXIS = 0;
+
+	public static final int LTAXIS = 0;  
+    
     public static int LEFT_STICK_X = 0;
     public static int LEFT_STICK_Y = 1;
   
@@ -93,6 +101,8 @@ public class Hardware
 
     public WPI_TalonSRX colorWheel_;
     public WPI_TalonSRX climbWinch_;
+
+    public Spark lightSaber_;
 
     public Solenoid testSolenoid_; 
 
@@ -119,6 +129,8 @@ public class Hardware
 
         climbWinch_ = new WPI_TalonSRX(WINCH_MOTOR);
         climbWinch_.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+
+        lightSaber_ = new Spark(0);
 
         if (IS_PNEUMATIC)
             testSolenoid_ = new Solenoid(PNEUMATICS_ID, TESTSOLENOID_ID);
@@ -176,6 +188,11 @@ public class Hardware
                 climbWinch_.set(ControlMode.PercentOutput, speed);
         }
    
+    public void liftsabe(double speed) 
+        {
+            lightSaber_.setSpeed(speed);
+        }
+
         public void testsol(Boolean isOpen)
     {
         if (!IS_PNEUMATIC)
