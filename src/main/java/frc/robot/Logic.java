@@ -102,12 +102,10 @@ public class Logic
 
         // SmartDashboard.putNumber("leftpos", hardware_.leftpos());
         // SmartDashboard.putNumber("rightpos", hardware_.rightpos());
-        if (drivejoy_.getRawButton(Hardware.BBUTTON))
-        {
-            hardware_.climbwithwinch(1);
-        }
-        else
-            hardware_.climbwithwinch(0);
+        
+    
+        hardware_.climbwithwinch(operatorjoy_.getRawAxis(Hardware.RTAXIS));
+ 
 
 
         if (operatorjoy_.getRawButton(Hardware.YBUTTON))
@@ -115,8 +113,36 @@ public class Logic
         if (operatorjoy_.getRawButton(Hardware.ABUTTON))
             hardware_.liftsabe(-1);
 
-
-        hardware_.climbwithwinch(operatorjoy_.getRawAxis(Hardware.RIGHT_STICK_Y));
+         
+        double intakeAxis = operatorjoy_.getRawAxis(Hardware.LEFT_STICK_Y);     
+        double deliverAxis = operatorjoy_.getRawAxis(Hardware.RIGHT_STICK_Y);
+        
+        if (intakeAxis > 0)
+        {
+            //drop
+            hardware_.intake(intakeAxis);
+            hardware_.fipptuate(intakeAxis);
+            hardware_.letThereBeFloor(1);
+        }
+        else
+        {
+            //intake 
+            hardware_.letThereBeFloor(-1);
+            hardware_.fipptuate(intakeAxis);
+            hardware_.intake(intakeAxis);
+        }   
+        if (deliverAxis > 0)
+        {
+            //drop
+            hardware_.fipptuate(deliverAxis);
+            hardware_.letThereBeFloor(1);
+        }
+        else
+        {
+            //deliver
+            hardware_.letThereBeFloor(-1);
+            hardware_.fipptuate(deliverAxis);
+        }
         
         if(drivejoy_.getPOV() == Hardware.DAXISN)
            isprecisionmode_ = true;
@@ -124,7 +150,7 @@ public class Logic
             isprecisionmode_ = false;
         SmartDashboard.putBoolean("isprecision", isprecisionmode_);
         
-        if (drivejoy_.getRawButton(Hardware.ABUTTON))
+        if (drivejoy_.getRawButton(Hardware.LBBUTTON))
             {
                 int color = hardware_.findColor();
                 if (color != checkgamecolor() && !isColorFound_)

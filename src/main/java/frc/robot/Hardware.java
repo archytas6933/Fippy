@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.revrobotics.ColorSensorV3;
@@ -52,9 +54,9 @@ public class Hardware
     public static final double kRamseteB = 2;
     public static final double kRamseteZeta = 0.7;
     
-    public static int WINCH_MOTOR =20;
+    public static int WINCH_MOTOR = 20;
 
-    public static int COLOR_WHEEL_MOTOR = 20;
+    public static int COLOR_WHEEL_MOTOR = 19;
     private static double COLOR_WHEEL_VELOCITY_P = 0.1;
     private static double COLOR_WHEEL_VELOCITY_I = 0.001;
     private static double COLOR_WHEEL_VELOCITY_D = 0;
@@ -64,6 +66,20 @@ public class Hardware
     private static double COLOR_WHEEL_POSITION_D = 0.2;
     private static int COLOR_WHEEL_VELOCITY_SLOT = 0;
     private static int COLOR_WHEEL_POSITION_SLOT = 1;
+
+    public static int INTAKE_MOTOR = 18;
+    private static double INTAKE_MOTOR_VELOCITY_P = 0.1;
+    private static double INTAKE_MOTOR_VELOCITY_I = 0.001;
+    private static double INTAKE_MOTOR_VELOCITY_D = 0;
+    private static double INTAKE_MOTOR_VELOCITY_F = 0.085;    
+    private static int INTAKE_MOTOR_VELOCITY_SLOT = 0;
+
+    public static int FIPPY_ROLLER_MOTOR = 17;
+    private static double FIPPY_ROLLER_MOTOR_VELOCITY_P = 0.1;
+    private static double FIPPY_ROLLER_MOTOR_VELOCITY_I = 0.001;
+    private static double FIPPY_ROLLER_MOTOR_VELOCITY_D = 0;
+    private static double FIPPY_ROLLER_MOTOR_VELOCITY_F = 0.085;
+    private static int FIPPY_ROLLER_MOTOR_VELOCITY_SLOT = 0;
         
     private final I2C.Port i2cPort = I2C.Port.kOnboard;
 
@@ -101,6 +117,9 @@ public class Hardware
 
     public WPI_TalonSRX colorWheel_;
     public WPI_TalonSRX climbWinch_;
+    public WPI_TalonSRX intakeMotor_;
+    public WPI_TalonSRX fippyRoller_;
+    public WPI_TalonSRX floor_;
 
     public Spark lightSaber_;
 
@@ -129,7 +148,7 @@ public class Hardware
 
         climbWinch_ = new WPI_TalonSRX(WINCH_MOTOR);
         climbWinch_.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-
+        floor_= new WPI_TalonSRX(16);
         lightSaber_ = new Spark(0);
 
         if (IS_PNEUMATIC)
@@ -140,7 +159,8 @@ public class Hardware
         camera2_.setResolution(120, 120);
         camera_.setResolution(120, 120);
         
-        
+        floor_.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+        floor_.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
     }
 
     // hardware helper functions
@@ -175,6 +195,44 @@ public class Hardware
             // intakeposition_ = colorWheel_.getSelectedSensorPosition();
         }
     } 
+    public void fipptuate(double speed)
+        {
+            // if (speed == 0)
+            // {
+            //     intakeMotor_.selectProfileSlot(1, 0);
+            //     intakeMotor_.setSelectedSensorPosition(0);
+            //     intakeMotor_.set(ControlMode.Position, 0);
+            // }
+            // else 
+            
+            //     intakeMotor_.set(ControlMode.PercentOutput, speed);
+            climbWinch_.set(ControlMode.PercentOutput, speed);
+        }
+    public void letThereBeFloor(double direction)
+    {
+            floor_.set(ControlMode.PercentOutput, direction);
+    }
+
+    public void intake(double speed)
+    {
+        // if (speed == 0)
+        //     {
+        //         intakeMotor_.selectProfileSlot(1, 0);
+        //         intakeMotor_.setSelectedSensorPosition(0);
+        //         intakeMotor_.set(ControlMode.Position, 0);
+        //     }
+        //     else 
+            
+        //         intakeMotor_.set(ControlMode.PercentOutput, speed);
+        // if (speed == 0)
+        //     {
+        //         fippyRoller_.selectProfileSlot(1, 0);
+        //         fippyRoller_.setSelectedSensorPosition(0);
+        //         fippyRoller_.set(ControlMode.Position, 0);
+        //     }
+        //         fippyRoller_.set(ControlMode.PercentOutput, speed);
+        lightSaber_.setSpeed(speed);
+    }
 
     public void climbwithwinch(double speed)
         {
