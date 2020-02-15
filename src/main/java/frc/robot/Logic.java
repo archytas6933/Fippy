@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public class Logic 
 {
+    private static final String PATH_TEST = "D2.5,R180,D2";
     private Hardware hardware_;
     public double colorRotations_;
     public int previousColor_;
@@ -63,22 +64,35 @@ public class Logic
         }
         return -1;
     }
-    public void startauto()
+    public void runpath (String path)
     {
         auto_ = new SequentialCommandGroup();
-        auto_.addCommands(new CommandDrive(4));
-        auto_.addCommands(new CommandTurn(90));        
-        auto_.addCommands(new CommandDrive(4));
-        auto_.addCommands(new CommandTurn(90));
-        auto_.addCommands(new CommandDrive(4));
-        auto_.addCommands(new CommandTurn(90));
-        auto_.addCommands(new CommandDrive(4));
-        auto_.addCommands(new CommandTurn(90));
-//        auto_.addCommands(new CommandDeliver());
-//        auto_.addCommands(hardware_.getAutoDriveCommand());
-//        auto_.addCommands(new CommandDrive(1));
-//        auto_.addCommands(new CommandTurn(180));
+        String[] pathlist = path.split(",");
+        for (String step: pathlist)
+        {
+            System.out.println(step);
+            char ctype = step.charAt(0);
+            step = step.substring(1);
+            double value = Double.parseDouble(step);
+            switch (ctype)
+            {
+                case 'D': auto_.addCommands(new CommandDrive(value));
+                    break;
+                case 'R': auto_.addCommands(new CommandTurn(value));
+                    break;
+                case 'W': auto_.addCommands(new CommandWait().withTimeout(value));
+                    break;
+                case 'I': auto_.addCommands(new CommandIntake(value));
+                    break;
+                case 'S': auto_.addCommands(new CommandDeliver().withTimeout(value));
+                    break;
+            }
+        }
         auto_.schedule();
+    }
+    public void startauto()
+    {
+       runpath(PATH_TEST);
     }
 
     public void startteleop()
@@ -99,15 +113,20 @@ public class Logic
         double mps = ((-hardware_.robotdrive_.getRightRate()+
             hardware_.robotdrive_.getLeftRate())/2)*10;
         SmartDashboard.putNumber("MPS", mps);
+        //display angle on SmartDashboard
+        SmartDashboard.putNumber("heading", hardware_.robotdrive_.getHeading());
+        SmartDashboard.putNumber("distance", hardware_.robotdrive_.getAverageEncoderDistance());
 
         // SmartDashboard.putNumber("leftpos", hardware_.leftpos());
         // SmartDashboard.putNumber("rightpos", hardware_.rightpos());
         
     
         hardware_.climbwithwinch(operatorjoy_.getRawAxis(Hardware.RTAXIS));
- 
-
-
+        
+        if (operatorjoy_.getRawAxis(Hardware.LTAXIS) != 0)
+            hardware_.climbwithwinch(-operatorjoy_.getRawAxis(Hardware.LTAXIS));
+        
+        hardware_.liftsabe(0); 
         if (operatorjoy_.getRawButton(Hardware.YBUTTON))
             hardware_.liftsabe(1);
         if (operatorjoy_.getRawButton(Hardware.ABUTTON))
@@ -143,6 +162,7 @@ public class Logic
             hardware_.letThereBeFloor(-1);
             hardware_.fipptuate(deliverAxis);
         }
+    
         
         if(drivejoy_.getPOV() == Hardware.DAXISN)
            isprecisionmode_ = true;
@@ -164,9 +184,9 @@ public class Logic
                 if (previousColor_ == -1)
                 {
                     previousColor_ = color; 
-                    hardware_.driveLock(0.2);
                     isAutoDriving_ = true;
                 }
+                hardware_.drive(0.2, 0);
                 int distance = ((color + 4 - previousColor_) % 4);
                 if (distance != 3)
                     {

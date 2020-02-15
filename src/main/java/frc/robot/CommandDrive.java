@@ -14,18 +14,18 @@ public class CommandDrive extends CommandBase {
    * Creates a new CommandDrive.
    */
 
-  private double meters_;
+  private double feet_;
   private DriveSubsystem drive_ = Robot.hardware_.robotdrive_;
 
-  public CommandDrive(double meters) 
+  public CommandDrive(double feet) 
   {
-    meters_ = meters;
+    feet_ = feet;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    drive_.drivelock(meters_);
+    drive_.drivelock(feet_);
     
     //
     //System.out.printf("left: %f, right: %f\n", drive_.getLeftDistance(), drive_.getRightDistance());
@@ -48,9 +48,9 @@ public class CommandDrive extends CommandBase {
     //double current = drive_.getAverageEncoderDistance();
     double left = drive_.getLeftDistance();
     double right = drive_.getRightDistance();
-    // System.out.printf("current: %f, goal: %f\n", current, meters_);
-    // return Math.abs(current) > Math.abs(meters_);
-    return Math.abs(left) > Math.abs(meters_) && 
-      Math.abs(right) > Math.abs(meters_);
+    // System.out.printf("current: %f, goal: %f\n", current, feet_);
+    // return Math.abs(current) > Math.abs(feet_);
+    return Math.abs(left) > Math.abs(feet_) && 
+      Math.abs(right) > Math.abs(feet_);
   }
 }

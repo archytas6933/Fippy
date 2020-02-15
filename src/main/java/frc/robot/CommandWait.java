@@ -9,40 +9,35 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class CommandIntake extends CommandBase {
+public class CommandWait extends CommandBase {
   /**
-   * Creates a new CommandIntake.
+   * Creates a new CommandWait.
    */
-  public double feet_;
-  public CommandIntake(double feet) {
-    feet_ = feet;
+  public CommandWait() {
+    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    Robot.hardware_.intake(1);
-    Robot.hardware_.robotdrive_.drivelock(feet_);
+  public void initialize() { 
+    Robot.hardware_.drive(0, 0);
+    Robot.hardware_.fipptuate(0);
+    Robot.hardware_.intake(0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-  
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    Robot.hardware_.intake(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    double left = Robot.hardware_.robotdrive_.getLeftDistance();
-    double right = Robot.hardware_.robotdrive_.getRightDistance();
-    return Math.abs(left) > Math.abs(feet_) && 
-      Math.abs(right) > Math.abs(feet_);
+    return false;
   }
 }

@@ -23,16 +23,16 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase 
 {
-  public static double TICKS_PER_METER = 1400.0;
-  public static double TICKS_PER_DEGREE = 18.0;
+  public static double TICKS_PER_FOOT = 720.0;
+  public static double TICKS_PER_DEGREE = 23.7;
   public static int LEFT_CONTROL_MOTOR = 14;
   public static int LEFT_FOLLOW_MOTOR = 12;
   public static int RIGHT_CONTROL_MOTOR = 11;
   public static int RIGHT_FOLLOW_MOTOR = 13; 
 
-  private static double MOTOR_POSITION_P = 0.3;
+  private static double MOTOR_POSITION_P = 0.5;
   private static double MOTOR_POSITION_I = 0;
-  private static double MOTOR_POSITION_D = 0.2;
+  private static double MOTOR_POSITION_D = 5;
   private static int MOTOR_POSITION_SLOT = 1;
 
   public WPI_TalonSRX leftDrive_;
@@ -103,22 +103,22 @@ public class DriveSubsystem extends SubsystemBase
 
   public double getLeftDistance()
   {
-    return leftDrive_.getSelectedSensorPosition() / TICKS_PER_METER;
+    return leftDrive_.getSelectedSensorPosition() / TICKS_PER_FOOT;
   }
 
   public double getLeftRate()
   {
-    return leftDrive_.getSelectedSensorVelocity() / TICKS_PER_METER;
+    return leftDrive_.getSelectedSensorVelocity() / TICKS_PER_FOOT;
   }
 
   public double getRightDistance()
   {
-    return -rightDrive_.getSelectedSensorPosition() / TICKS_PER_METER;
+    return -rightDrive_.getSelectedSensorPosition() / TICKS_PER_FOOT;
   }
 
   public double getRightRate()
   {
-    return rightDrive_.getSelectedSensorVelocity() / TICKS_PER_METER;
+    return rightDrive_.getSelectedSensorVelocity() / TICKS_PER_FOOT;
   }
 
   public Pose2d getPose() {
@@ -162,9 +162,9 @@ public class DriveSubsystem extends SubsystemBase
   {
     resetencoders();
     leftDrive_.selectProfileSlot(1, 0);
-    leftDrive_.set(ControlMode.Position, distance * TICKS_PER_METER);
+    leftDrive_.set(ControlMode.Position, distance * TICKS_PER_FOOT);
     rightDrive_.selectProfileSlot(1, 0);
-    rightDrive_.set(ControlMode.Position, -distance * TICKS_PER_METER);
+    rightDrive_.set(ControlMode.Position, -distance * TICKS_PER_FOOT);
   }
 
   public void tankDriveVolts(double leftVolts, double rightVolts) {

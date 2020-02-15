@@ -55,7 +55,7 @@ public class Hardware
     public static final double kRamseteZeta = 0.7;
     
     public static int WINCH_MOTOR = 20;
-
+    public static int LET_THERE_BE_FLOOR = 10;
     public static int COLOR_WHEEL_MOTOR = 19;
     private static double COLOR_WHEEL_VELOCITY_P = 0.1;
     private static double COLOR_WHEEL_VELOCITY_I = 0.001;
@@ -101,9 +101,9 @@ public class Hardware
 	public static final int DAXISN = 0;
     public static final int DAXISS = 180;
 
-	public static final int RTAXIS = 0;
+	public static final int RTAXIS = 3;
 
-	public static final int LTAXIS = 0;  
+	public static final int LTAXIS = 2;  
     
     public static int LEFT_STICK_X = 0;
     public static int LEFT_STICK_Y = 1;
@@ -111,6 +111,7 @@ public class Hardware
     public static int RIGHT_STICK_X = 4;
     public static int RIGHT_STICK_Y = 5;
   
+    public static double INTAKE_FIPP = 0.3;
 
 
     // hardware object declarations
@@ -146,6 +147,8 @@ public class Hardware
         // colorWheel_.config_kI(COLOR_WHEEL_POSITION_SLOT, COLOR_WHEEL_POSITION_I);
         // colorWheel_.config_kD(COLOR_WHEEL_POSITION_SLOT, COLOR_WHEEL_POSITION_D);
 
+        intakeMotor_ = new WPI_TalonSRX(INTAKE_MOTOR);
+        fippyRoller_ = new WPI_TalonSRX(FIPPY_ROLLER_MOTOR);
         climbWinch_ = new WPI_TalonSRX(WINCH_MOTOR);
         climbWinch_.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
         floor_= new WPI_TalonSRX(16);
@@ -197,16 +200,17 @@ public class Hardware
     } 
     public void fipptuate(double speed)
         {
-            // if (speed == 0)
-            // {
-            //     intakeMotor_.selectProfileSlot(1, 0);
-            //     intakeMotor_.setSelectedSensorPosition(0);
-            //     intakeMotor_.set(ControlMode.Position, 0);
-            // }
-            // else 
+            if (speed == 0)
+            {
+                intakeMotor_.selectProfileSlot(1, 0);
+                intakeMotor_.setSelectedSensorPosition(0);
+                intakeMotor_.set(ControlMode.Position, 0);
+            }
+            else 
             
-            //     intakeMotor_.set(ControlMode.PercentOutput, speed);
-            climbWinch_.set(ControlMode.PercentOutput, speed);
+                intakeMotor_.set(ControlMode.PercentOutput, speed);
+           
+            //climbWinch_.set(ControlMode.PercentOutput, -speed);
         }
     public void letThereBeFloor(double direction)
     {
@@ -215,23 +219,18 @@ public class Hardware
 
     public void intake(double speed)
     {
-        // if (speed == 0)
-        //     {
-        //         intakeMotor_.selectProfileSlot(1, 0);
-        //         intakeMotor_.setSelectedSensorPosition(0);
-        //         intakeMotor_.set(ControlMode.Position, 0);
-        //     }
-        //     else 
+        if (speed == 0)
+            {
+                intakeMotor_.selectProfileSlot(1, 0);
+                intakeMotor_.setSelectedSensorPosition(0);
+                intakeMotor_.set(ControlMode.Position, 0);
+            }
+            else 
             
-        //         intakeMotor_.set(ControlMode.PercentOutput, speed);
-        // if (speed == 0)
-        //     {
-        //         fippyRoller_.selectProfileSlot(1, 0);
-        //         fippyRoller_.setSelectedSensorPosition(0);
-        //         fippyRoller_.set(ControlMode.Position, 0);
-        //     }
-        //         fippyRoller_.set(ControlMode.PercentOutput, speed);
-        lightSaber_.setSpeed(speed);
+                intakeMotor_.set(ControlMode.PercentOutput, speed);
+        fipptuate(speed * INTAKE_FIPP);
+        letThereBeFloor(-1);
+        //lightSaber_.setSpeed(speed);
     }
 
     public void climbwithwinch(double speed)
