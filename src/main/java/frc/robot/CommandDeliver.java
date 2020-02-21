@@ -20,19 +20,20 @@ public class CommandDeliver extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    Robot.hardware_.fipptuate(1);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Robot.hardware_.drive(0.2, 0);
+    Robot.hardware_.drive(-0.15, 0);
+    Robot.hardware_.fipptuate(1);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     Robot.hardware_.fipptuate(0);
+    Robot.hardware_.drive(0, 0);
   }
 
   // Returns true when the command should end.

@@ -63,8 +63,8 @@ public class DriveSubsystem extends SubsystemBase
     leftDrive_.config_kD(MOTOR_POSITION_SLOT, MOTOR_POSITION_D);
     leftDrive_.setNeutralMode(NeutralMode.Brake);
     leftFollow_ = new WPI_VictorSPX(LEFT_FOLLOW_MOTOR);
-    //  leftFollow_.setNeutralMode(NeutralMode.Brake);
-    //  leftFollow_.follow(leftDrive_);
+    leftFollow_.setNeutralMode(NeutralMode.Brake);
+    leftFollow_.follow(leftDrive_);
 
     rightDrive_ = new WPI_TalonSRX(RIGHT_CONTROL_MOTOR);
     rightDrive_.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
@@ -74,8 +74,8 @@ public class DriveSubsystem extends SubsystemBase
     rightDrive_.config_kD(MOTOR_POSITION_SLOT, MOTOR_POSITION_D);
     rightDrive_.setNeutralMode(NeutralMode.Brake);
     rightFollow_ = new WPI_VictorSPX(RIGHT_FOLLOW_MOTOR);
-    //  rightFollow_.setNeutralMode(NeutralMode.Brake);
-    //  rightFollow_.follow(rightDrive_);
+    rightFollow_.setNeutralMode(NeutralMode.Brake);
+    rightFollow_.follow(rightDrive_);
 
     m_leftMotors = new SpeedControllerGroup(leftDrive_, leftFollow_);
     m_rightMotors = new SpeedControllerGroup(rightDrive_, rightFollow_);
