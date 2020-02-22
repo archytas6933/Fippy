@@ -1,7 +1,5 @@
 package frc.robot;
 
-import javax.lang.model.util.ElementScanner6;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -11,10 +9,23 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 public class Logic 
 {
     private static final String[] PATHS = {
-        "TEST,D2.5,R180,D2.5",
-        "DIRECT,W2,D2.5,S2,D-1,R45,D-4",
-        "STEAL,D2.5,S5,D-1,R45,D-4",
-        "DUMPCOLLECT,D2.5,S5,D-1,R45,D-4"
+        "DIRECT,W2,D-8.5,S4,D1,R45,D4",
+        "STEAL,D2.5,I3,W0,D-15,R45,D-15,R-45,D-2,S4",
+        "DUMPCOLLECT,D2.5,S5,D-1,R45,D-4",
+        "AROUND,W2,D-4,R45,D3,R-45,D2,S5,D1,R45,D4",
+        "DUMP&BUMP,S5,I20,W0",
+        "TEST,D1,W10",
+        ",",
+        ",",
+        ",",
+        ",",
+        ",",
+        ",",
+        ",",
+        ",",
+        ",",
+        ",",
+        ",",
     };
     private int currentauto_;
     private Hardware hardware_;
@@ -144,12 +155,17 @@ public class Logic
          
         double intakeAxis = operatorjoy_.getRawAxis(Hardware.LEFT_STICK_Y);     
         double deliverAxis = operatorjoy_.getRawAxis(Hardware.RIGHT_STICK_Y);
+        
+        boolean isFloorUp = true;
 
-        SmartDashboard.putNumber("floor", hardware_.floor_.getSelectedSensorPosition());
-        // SmartDashboard.putNumber("is limitf closed",
-        //     hardware_.floor_.isFwdLimitSwitchClosed());
-        // SmartDashboard.putNumber("is limitr closed", 
-        //     hardware_.floor_.isRevLimitSwitchClosed());
+        if (hardware_.floor_.getSelectedSensorPosition() < 0.1) {
+            isFloorUp = false;
+        }
+        SmartDashboard.putBoolean("floor", isFloorUp);
+        SmartDashboard.putNumber("is limitf closed",
+            hardware_.floor_.isFwdLimitSwitchClosed());
+        SmartDashboard.putNumber("is limitr closed", 
+            hardware_.floor_.isRevLimitSwitchClosed());
 
         if (Math.abs(intakeAxis) > 0.2) {
             hardware_.intake(intakeAxis);
@@ -163,11 +179,11 @@ public class Logic
                     hardware_.fipptuate(deliverAxis);
                     hardware_.letThereBeFloor(true);
                 }
-                else
+                else//Both do the exact same thing. Why was this diffrent true and false
                 {
                     //deliver
                     hardware_.fipptuate(deliverAxis);
-                    hardware_.letThereBeFloor(false);
+                    hardware_.letThereBeFloor(true);
                 }
             }
             else
@@ -219,13 +235,13 @@ public class Logic
         double speed = drivejoy_.getRawAxis(Hardware.LEFT_STICK_Y);
         double intakespeed =  drivejoy_.getRawAxis(Hardware.LTAXIS);
         double deliveryspeed = drivejoy_.getRawAxis(Hardware.RTAXIS);
-        double rotate = drivejoy_.getRawAxis(Hardware.RIGHT_STICK_X);
+        double rotate = drivejoy_.getRawAxis(Hardware.RIGHT_STICK_X)/1.2;
         speed += intakespeed;
         speed -= deliveryspeed;
         if (isprecisionmode_)
             {
                 speed = speed / 2;
-                rotate = rotate / 2;
+                rotate = rotate / 1.1;
             }
 
         // if (drivejoy_.getRawButton(Hardware.RBBUTTON))

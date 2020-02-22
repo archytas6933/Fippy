@@ -255,12 +255,12 @@ public class Hardware
         wheelPosition_.setSpeed(direction);
     }
     
-    public void testsol(Boolean isOpen)
-    {
-        if (!IS_PNEUMATIC)
-            return;
-        testSolenoid_.set(isOpen);
-    }
+    // public void testsol(Boolean isOpen)
+    // {
+    //     if (!IS_PNEUMATIC)
+    //         return;
+    //     testSolenoid_.set(isOpen);
+    // }
 
     public int findColor()
     {
