@@ -47,14 +47,14 @@ public class Hardware
     private static int POSITION_SLOT = 0;
     private static int VELOCITY_SLOT = 1;
 
-    private static double FLOOR_POSITION_P = 0.4;
+    private static double FLOOR_POSITION_P = 0.9;
     private static double FLOOR_POSITION_I = 0; //0.0015;
-    private static double FLOOR_POSITION_D = 0.1;
+    private static double FLOOR_POSITION_D = 0.01;
 
     public static int FLOOR_TOP = 0;
     public static int FLOOR_BOTTOM = -1300;
-    public static int FLOOR_DELIVER = -200;
-    public static int FLOOR_RELAY = -600;
+    public static int FLOOR_DELIVER = 0;
+    public static int FLOOR_RELAY = -700;
 
     public static int INTAKE_MOTOR = 18;
     private static double INTAKE_MOTOR_VELOCITY_P = 0.1;
@@ -157,6 +157,8 @@ public class Hardware
         floor_.config_kI(POSITION_SLOT, FLOOR_POSITION_I);
         floor_.config_kD(POSITION_SLOT, FLOOR_POSITION_D);
         floor_.setSelectedSensorPosition(0);
+        letThereBeFloor(0);
+
     }
 
     // hardware helper functions
@@ -205,31 +207,32 @@ public class Hardware
             //climbWinch_.set(ControlMode.PercentOutput, -speed);
         }
 
-    public void movefloor(double speed)
+    public void resetFloor()
     {
-        // floor_.set(ControlMode.PercentOutput, speed);
+        floor_.set(ControlMode.PercentOutput, 0.2);
+        floor_.setSelectedSensorPosition(0);
     }
 
 
-    public void letThereBeFloor(boolean isup)
+    public void letThereBeFloor(int floorPosition)
     {
         floor_.selectProfileSlot(POSITION_SLOT, 0);
-        floor_.set(ControlMode.Position, 
-            isup ? FLOOR_DELIVER : FLOOR_BOTTOM);
+        floor_.set(ControlMode.Position, floorPosition);
     }
 
     public void intake(double speed)
     {
         if (speed == 0)
             {
-                intakeMotor_.selectProfileSlot(1, 0);
-                intakeMotor_.setSelectedSensorPosition(0);
-                intakeMotor_.set(ControlMode.Position, 0);
+                intakeMotor_.set(ControlMode.PercentOutput, 0);
+                // intakeMotor_.selectProfileSlot(1, 0);
+                // intakeMotor_.setSelectedSensorPosition(0);
+                // intakeMotor_.set(ControlMode.Position, 0);
             }
             else {
                 intakeMotor_.set(ControlMode.PercentOutput, speed);
                 fipptuate(speed * INTAKE_FIPP);
-                letThereBeFloor(false);
+                letThereBeFloor((speed < 0) ? FLOOR_RELAY : FLOOR_BOTTOM);
             }
     }
 
