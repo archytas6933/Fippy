@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class CommandDeliver extends CommandBase {
@@ -27,6 +28,7 @@ public class CommandDeliver extends CommandBase {
   public void execute() {
     Robot.hardware_.drive(-0.15, 0);
     Robot.hardware_.fipptuate(1);
+    Robot.hardware_.letThereBeFloor(Hardware.FLOOR_DELIVER);
   }
 
   // Called once the command ends or is interrupted.

@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class DriveSubsystem extends SubsystemBase 
 {
   public static double TICKS_PER_FOOT = 720.0;
-  public static double TICKS_PER_DEGREE = 23.7;
+  public static double TICKS_PER_DEGREE = 25;
   public static int LEFT_CONTROL_MOTOR = 14;
   public static int LEFT_FOLLOW_MOTOR = 12;
   public static int RIGHT_CONTROL_MOTOR = 11;

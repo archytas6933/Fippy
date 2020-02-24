@@ -21,8 +21,12 @@ public class CommandIntake extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    Robot.hardware_.intake(1);
-    Robot.hardware_.robotdrive_.drivelock(feet_);
+    if (feet_ < 0) 
+      Robot.hardware_.intake(-1);
+    else {
+      Robot.hardware_.intake(1);
+      Robot.hardware_.robotdrive_.drivelock(feet_);
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -35,11 +39,16 @@ public class CommandIntake extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     Robot.hardware_.intake(0);
+    Robot.hardware_.drive(0, 0);
+    Robot.hardware_.fipptuate(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if (feet_ < 0)
+      return false;
+    
     double left = Robot.hardware_.robotdrive_.getLeftDistance();
     double right = Robot.hardware_.robotdrive_.getRightDistance();
     return Math.abs(left) > Math.abs(feet_) && 

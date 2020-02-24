@@ -14,7 +14,7 @@ public class Logic
         "DUMPCOLLECT,D2.5,S5,D-1,R45,D-4",
         "AROUND,W2,D-4,R45,D3,R-45,D2,S5,D1,R45,D4",
         "DUMP&BUMP,S5,I20,W0",
-        "TEST,D1,W10",
+        "TEST,D1,D-1,W1,S1",
         ",",
         ",",
         ",",
@@ -25,7 +25,7 @@ public class Logic
         ",",
         ",",
         ",",
-        ",",
+        ","
     };
     private int currentauto_;
     private Hardware hardware_;
@@ -89,6 +89,7 @@ public class Logic
     public void runpath (String path)
     {
         auto_ = new SequentialCommandGroup();
+        auto_.addCommands(new CommandIntake(-1).withTimeout(0.25));
         String[] pathlist = path.split(",");
         boolean istitle = true;
         for (String step: pathlist)
@@ -108,7 +109,11 @@ public class Logic
                         break;
                     case 'W': auto_.addCommands(new CommandWait().withTimeout(value));
                         break;
-                    case 'I': auto_.addCommands(new CommandIntake(value));
+                    case 'I': 
+                                if (value < 0)
+                                    auto_.addCommands(new CommandIntake(value).withTimeout(-value));
+                                else
+                                    auto_.addCommands(new CommandIntake(value));
                         break;
                     case 'S': auto_.addCommands(new CommandDeliver().withTimeout(value));
                         break;
@@ -151,21 +156,13 @@ public class Logic
             hardware_.liftsabe(1);
         if (operatorjoy_.getRawButton(Hardware.ABUTTON))
             hardware_.liftsabe(-1);
-
+        if (operatorjoy_.getRawButton(Hardware.XBUTTON))
+            hardware_.resetFloor();
          
         double intakeAxis = operatorjoy_.getRawAxis(Hardware.LEFT_STICK_Y);     
         double deliverAxis = operatorjoy_.getRawAxis(Hardware.RIGHT_STICK_Y);
         
-        boolean isFloorUp = true;
-
-        if (hardware_.floor_.getSelectedSensorPosition() < 0.1) {
-            isFloorUp = false;
-        }
-        SmartDashboard.putBoolean("floor", isFloorUp);
-        SmartDashboard.putNumber("is limitf closed",
-            hardware_.floor_.isFwdLimitSwitchClosed());
-        SmartDashboard.putNumber("is limitr closed", 
-            hardware_.floor_.isRevLimitSwitchClosed());
+        
 
         if (Math.abs(intakeAxis) > 0.2) {
             hardware_.intake(intakeAxis);
@@ -175,15 +172,15 @@ public class Logic
             if (Math.abs(deliverAxis) > 0.2) {
                 if (deliverAxis > 0)
                 {
-                    //drop
-                    hardware_.fipptuate(deliverAxis);
-                    hardware_.letThereBeFloor(true);
-                }
-                else//Both do the exact same thing. Why was this diffrent true and false
-                {
                     //deliver
                     hardware_.fipptuate(deliverAxis);
-                    hardware_.letThereBeFloor(true);
+                    hardware_.letThereBeFloor(Hardware.FLOOR_DELIVER);
+                }
+                else
+                {
+                    //drop
+                    hardware_.fipptuate(deliverAxis);
+                    hardware_.letThereBeFloor(Hardware.FLOOR_RELAY);
                 }
             }
             else
@@ -235,7 +232,7 @@ public class Logic
         double speed = drivejoy_.getRawAxis(Hardware.LEFT_STICK_Y);
         double intakespeed =  drivejoy_.getRawAxis(Hardware.LTAXIS);
         double deliveryspeed = drivejoy_.getRawAxis(Hardware.RTAXIS);
-        double rotate = drivejoy_.getRawAxis(Hardware.RIGHT_STICK_X)/1.2;
+        double rotate = drivejoy_.getRawAxis(Hardware.RIGHT_STICK_X)/1.3;
         speed += intakespeed;
         speed -= deliveryspeed;
         if (isprecisionmode_)
@@ -282,6 +279,20 @@ public class Logic
                 currentauto_ = 0;
             SmartDashboard.putString("AUTOPATH", PATHS[currentauto_]);
         }
+
+        // boolean isFloorUp = true;
+
+        // if (hardware_.floor_.getSelectedSensorPosition() < 0.1) {
+        //     isFloorUp = false;
+        // }
+
+        //SmartDashboard.putBoolean("floor", isFloorUp);
+        SmartDashboard.putNumber("floor pos", hardware_.floor_.getSelectedSensorPosition());
+        SmartDashboard.putNumber("is limitf closed",
+            hardware_.floor_.isFwdLimitSwitchClosed());
+        SmartDashboard.putNumber("is limitr closed", 
+            hardware_.floor_.isRevLimitSwitchClosed());
+
 
 
     }

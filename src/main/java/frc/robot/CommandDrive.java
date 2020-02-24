@@ -48,7 +48,7 @@ public class CommandDrive extends CommandBase {
     //double current = drive_.getAverageEncoderDistance();
     double left = drive_.getLeftDistance();
     double right = drive_.getRightDistance();
-    // System.out.printf("current: %f, goal: %f\n", current, feet_);
+    //System.out.printf("left: %f, right: %f, goal: %f\n", left, right, feet_);
     // return Math.abs(current) > Math.abs(feet_);
     return Math.abs(left) > Math.abs(feet_) && 
       Math.abs(right) > Math.abs(feet_);
