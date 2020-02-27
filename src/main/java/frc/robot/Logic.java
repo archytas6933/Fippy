@@ -9,13 +9,12 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 public class Logic 
 {
     private static final String[] PATHS = {
-        "DIRECT,W2,D-8.5,S4,D1,R45,D4",
-        "STEAL,D2.5,I3,W0,D-15,R45,D-15,R-45,D-2,S4",
-        "DUMPCOLLECT,D2.5,S5,D-1,R45,D-4",
-        "AROUND,W2,D-4,R90,D3,R-90,D2,S5,D1,R90,D4",
+        "DIRECT,W0,D-8.5,S3,D1,R60,D4",
+        "STEAL,D2.5,I3,W0,D-15,R64.5,D-15,R-45,D-2,S4",
+        "DUMPCOLLECT,D2.5,S5,D-1,R64.5,D-4",
+        "AROUND,W0,D-3,R40,D-7,R-40,D-1.5,S3,D1,R60,D4",
         "DUMP&BUMP,S5,I20,W0",
-        "TEST,D1,D-1,W1,S1",
-        "AROUNDTWO,W2,D-4,R90,D3,R-90,D2,S5,D1,R90,D4",
+        "TEST,R90",
     };
     private int currentauto_;
     private Hardware hardware_;
@@ -79,8 +78,9 @@ public class Logic
     public void runpath (String path)
     {
         auto_ = new SequentialCommandGroup();
-        auto_.addCommands(new CommandIntake(-1).withTimeout(0.7));
-        auto_.addCommands(new CommandIntake(CommandIntake.DROPVALUE).withTimeout(-CommandIntake.DROPVALUE));
+       // auto_.addCommands(new CommandIntake(-1).withTimeout(0.7));
+        auto_.addCommands(new CommandIntake(CommandIntake.DROPVALUE)
+        .withTimeout(-CommandIntake.DROPVALUE));
         
         String[] pathlist = path.split(",");
         boolean istitle = true;
@@ -133,7 +133,7 @@ public class Logic
     {    
         hardware_.climbwithwinch(operatorjoy_.getRawAxis(Hardware.RTAXIS));
         
-        if (operatorjoy_.getRawAxis(Hardware.LTAXIS) != 0)
+        if (operatorjoy_.getRawAxis(Hardware.LTAXIS) != 0); 
             hardware_.climbwithwinch(-operatorjoy_.getRawAxis(Hardware.LTAXIS));
         
         hardware_.liftsabe(0); 
@@ -183,18 +183,23 @@ public class Logic
            isprecisionmode_ = true;
         if (drivejoy_.getPOV() == Hardware.DAXISS)
             isprecisionmode_ = false;
-        
         if (operatorjoy_.getRawButton(Hardware.RBBUTTON))
             {
                 int color = hardware_.findColor();
-                if (color != checkgamecolor() && !isColorFound_)
+                // if (color != checkgamecolor() && !isColorFound_)
+                //     hardware_.spinwheel(-1);
+                // else 
+                //     {
+                //     if (!isColorFound_)
+                //         hardware_.spinwheel(0);
+                //     isColorFound_ = true;
+                //     }    
+                if(checkgamecolor() == -1)
+                {
                     hardware_.spinwheel(-1);
-                else 
-                    {
-                    if (!isColorFound_)
-                        hardware_.spinwheel(0);
-                    isColorFound_ = true;
-                    }    
+                } 
+                else
+                    hardware_.spinwheel(-0.4);
                 if (previousColor_ == -1)
                 {
                     previousColor_ = color; 
@@ -208,6 +213,8 @@ public class Logic
                     previousColor_ = color;
                     }
             }
+        else if (operatorjoy_.getRawButton(Hardware.LBBUTTON))
+            hardware_.spinwheel(0.4);
         else
             {
                 // if (previousColor_ != -1) 

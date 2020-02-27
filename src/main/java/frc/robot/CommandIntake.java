@@ -26,7 +26,10 @@ public class CommandIntake extends CommandBase {
     {
       Robot.hardware_.intake(-1);
       if (feet_ == DROPVALUE)
+      {
         Robot.hardware_.liftwheel(0.3);
+        Robot.hardware_.fipptuate(0);
+      }
     }
       else {
       Robot.hardware_.intake(1);
