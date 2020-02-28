@@ -14,7 +14,8 @@ public class Logic
         //"DUMPCOLLECT,D2.5,S5,D-1,R64.5,D-4",
         "AROUND,W0,D-3,R40,D-7,R-40,D-1.5,S3,D1,R60,D4",
         //"DUMP&BUMP,S5,I20,W0",
-       // "TEST,R90",
+       "TEST,W0,D-3",
+       ","
     };
     private int currentauto_;
     private Hardware hardware_;
