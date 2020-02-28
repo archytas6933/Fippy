@@ -134,7 +134,7 @@ public class Logic
     {    
         hardware_.climbwithwinch(operatorjoy_.getRawAxis(Hardware.RTAXIS));
         
-        if (operatorjoy_.getRawAxis(Hardware.LTAXIS) != 0); 
+        if (operatorjoy_.getRawAxis(Hardware.LTAXIS) >= 0.2) 
             hardware_.climbwithwinch(-operatorjoy_.getRawAxis(Hardware.LTAXIS));
         
         hardware_.liftsabe(0); 
