@@ -15,8 +15,7 @@ public class Logic
         "AROUND,W0,D-3,R40,D-7,R-40,D-1.5,S3,D1,R60,D4",
         "TEST,S1",
         "EAT'N'YEET,W0,D5,I6.5,D-13,R-40,D-8,R40,D-1.5,S3.5,D1,R60,D4",
-        "DUMP'N'BUMP,S1,D5,I16
-        ,W0,D-21,R-40,D-8,R40,D-1.5,S3.5,D1,R60,D4"
+        "DUMP'N'BUMP,S1,D5,I16,W0,D-21,R-40,D-8,R40,D-1.5,S3.5,D1,R60,D4"
     };
     private int currentauto_;
     private Hardware hardware_;
