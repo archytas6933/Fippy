@@ -32,6 +32,10 @@ public class CommandIntake extends CommandBase {
       }
     }
       else {
+      Robot.hardware_.robotdrive_.leftDrive_.
+      configClosedLoopPeakOutput(1, 0.5);
+      Robot.hardware_.robotdrive_.rightDrive_.
+      configClosedLoopPeakOutput(1, 0.5);
       Robot.hardware_.intake(1);
       Robot.hardware_.robotdrive_.drivelock(feet_);
     }
@@ -50,6 +54,11 @@ public class CommandIntake extends CommandBase {
     Robot.hardware_.drive(0, 0);
     Robot.hardware_.fipptuate(0);
     Robot.hardware_.liftwheel(0);
+   
+    Robot.hardware_.robotdrive_.leftDrive_.
+    configClosedLoopPeakOutput(1, 1);
+    Robot.hardware_.robotdrive_.rightDrive_.
+    configClosedLoopPeakOutput(1, 1);
   }
 
   // Returns true when the command should end.

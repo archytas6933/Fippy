@@ -52,8 +52,8 @@ public class Hardware
     private static double FLOOR_POSITION_D = 0.01;
 
     public static int FLOOR_TOP = 0;
-    public static int FLOOR_BOTTOM = -1300;
-    public static int FLOOR_DELIVER = 0;
+    public static int FLOOR_BOTTOM = -950;
+    public static int FLOOR_DELIVER = -150;
     public static int FLOOR_RELAY = -700;
 
     public static int INTAKE_MOTOR = 18;
@@ -87,6 +87,8 @@ public class Hardware
     
 	public static final int DAXISN = 0;
     public static final int DAXISS = 180;
+    public static final int DAXISE = 90;
+    public static final int DAXISW = 270;
 
 	public static final int RTAXIS = 3;
 
@@ -201,9 +203,13 @@ public class Hardware
                 fippyRoller_.setSelectedSensorPosition(0);
                 fippyRoller_.set(ControlMode.Position, 0);
             }
+            else if (speed > 0)
+            {
+                fippyRoller_.set(ControlMode.PercentOutput, speed);
+                intakeMotor_.set(ControlMode.PercentOutput, speed);
+            }
             else 
                 fippyRoller_.set(ControlMode.PercentOutput, speed);
-           
             //climbWinch_.set(ControlMode.PercentOutput, -speed);
         }
 

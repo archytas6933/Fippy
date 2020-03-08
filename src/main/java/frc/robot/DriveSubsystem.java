@@ -180,8 +180,13 @@ public class DriveSubsystem extends SubsystemBase
 
   public void setMaxOutput(double maxOutput) 
   {
-//    m_drive.setMaxOutput(maxOutput);
+    // m_drive.setMaxOutput(maxOutput);
   }
+
+  // public double getMaxOutput()
+  // {
+  //   return m_drive.getMaxOutput();
+  // }
 
   public void zeroHeading() 
   {
